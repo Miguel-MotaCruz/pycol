@@ -229,11 +229,14 @@ class Complexity:
         meta= self.meta
         
         dist_matrix=np.zeros((len(X2),len(X)))
-        
 
         #calculate the ranges of all attributes
-        range_max=np.max(X,axis=1)
-        range_min=np.min(X,axis=1)
+        range_max=np.max(X,axis=0)
+        range_min=np.min(X,axis=0)
+
+        # print the sizes of X, X2, range_max, range_min
+        # print(X.shape, X2.shape, range_max.shape, range_min.shape, len(X2[0]))
+        # print(len(X), len(X2))
 
         for i in range(len(X2)): 
             for j in range(len(X)):
@@ -245,7 +248,10 @@ class Complexity:
                         dist+=1
                     #numerical
                     if(meta[k]==0):
-                        
+                        # if(len(range_max)<=k):
+                        #     print("range_max_out_of_bounds", len(range_max), k)
+                        # elif(len(range_min)<=k):
+                        #     print("range_min_out_of_bounds", len(range_min), k)
                         if(range_max[k]-range_min[k]==0):
                             dist+=(abs(X2[i][k]-X[j][k]))**2
                         else:
@@ -1000,9 +1006,14 @@ class Complexity:
             r = 0
         else:
             r = count_intra/count_inter
-
-        
-        
+        if(count_intra==0):
+            print("count_intra_zero")
+        if(count_inter==0):
+            print("count_inter_zero")
+        #print if count_inter is inf
+        print("count_inter",count_inter, "count_intra",count_intra)
+            
+        print(r)
 
         N2 = r/(1+r)
         return N2
@@ -1731,11 +1742,10 @@ class Complexity:
             min_feature = min(transpose_X[j])
             max_feature = max(transpose_X[j])
 
+            if(min_feature == max_feature):
+                print(min_feature, "-", max_feature)
           
-            
-           
 
-              
             step = (max_feature-min_feature)/(resolution+1)
             steps.append(step)
             #calculate the hypercube bounds for each dimension
@@ -1807,6 +1817,7 @@ class Complexity:
 
         '''
         transpose_X = np.transpose(self.X)
+
         purities = [] 
         #multiple resolutions
         for i in range(max_resolution):
@@ -1952,8 +1963,10 @@ class Complexity:
                 std_c2 = np.std(sample_c2,0)
                 
 
-                
-                f1 = ((avg_c1-avg_c2)**2)/(std_c1**2+std_c2**2)
+                # Suppress the warning for division by zero
+                with np.errstate(divide='ignore', invalid='ignore'):
+                    f1 = ((avg_c1 - avg_c2) ** 2) / (std_c1 ** 2 + std_c2 ** 2)
+                # f1 = ((avg_c1-avg_c2)**2)/(std_c1**2+std_c2**2)
                 
                 
                 f1[np.isinf(f1)]=0
@@ -2037,8 +2050,9 @@ class Complexity:
             
                 denom=(maxmax - minmin)
 
-
-                n_d = numer/denom
+                # Suppress the warning for division by zero
+                with np.errstate(divide='ignore', invalid='ignore'):
+                    n_d = numer/denom 
                
                 n_d[np.isinf(n_d)]=0
                 n_d[np.isnan(n_d)]=0
@@ -2175,8 +2189,8 @@ class Complexity:
 
                     #check if one of the classes is not represented
                     if(len(sample_c1)==0 or len(sample_c2)==0):
-                        maxmin = np.full(len(X[1]),np.inf)
-                        minmax = np.full(len(X[1]),-np.inf)
+                        maxmin = np.full(X.shape[1],np.inf)
+                        minmax = np.full(X.shape[1],-np.inf)
                     else:
                         maxmin = np.max([np.min(sample_c1,axis=0),np.min(sample_c2,axis=0)],axis=0)
                         minmax = np.min([np.max(sample_c1,axis=0),np.max(sample_c2,axis=0)],axis=0)
