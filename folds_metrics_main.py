@@ -82,7 +82,7 @@ def main():
                 # process(args)
                 args_list.append((folds_folder, dataset_name, n_splits, reps, partition_strategy, all_metrics))
 
-    with Pool(8) as p:
+    with Pool(4) as p:
         p.map(process, args_list)
     end_time = time.time()
     print("Time elapsed normal: ", end_time - start_time)
