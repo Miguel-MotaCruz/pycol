@@ -140,7 +140,7 @@ class Complexity:
                 X[:,i] = c
 
         if 1 in meta:
-            X = X.astype(np.float)
+            X = X.astype(float)
 
 
         #indentify the existing classes
@@ -996,7 +996,7 @@ class Complexity:
             for j in range(len(self.dist_matrix[0])):
                 if(self.y[i]==self.y[j] and i!=j and self.dist_matrix[i][j]<min_intra):
                     min_intra=self.dist_matrix[i][j]
-                if(self.y[i]!=self.y[j] and self.dist_matrix[i][j]<min_inter):
+                if(self.y[i]!=self.y[j] and self.dist_matrix[i][j]<min_inter): #different class
                     min_inter=self.dist_matrix[i][j]
             count_inter+=min_inter
             count_intra+=min_intra
@@ -1006,6 +1006,7 @@ class Complexity:
             r = 0
         else:
             r = count_intra/count_inter
+            
         if(count_intra==0):
             print("count_intra_zero")
         if(count_inter==0):
@@ -2163,7 +2164,7 @@ class Complexity:
 
        
         f4s=[]
-        #one vs one method
+        #one vs one method 
         for i2 in range(len(self.class_inxs)):
             for j2 in range(i2+1,len(self.class_inxs)):
                 
